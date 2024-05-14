@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borrow Book - Library Management System</title>
+    <style>
+        body {
+            background: url('bg.png') no-repeat center center fixed; /* Added background image */
+            background-size: cover; /* Ensures the image covers the whole screen */
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.6); /* Dark background */
+            color: #fff; /* Text color */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); /* Soft shadow */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Library Management System</h1>
+        <a href="nav.html" style="color: white; text-decoration: none;">Go to Home</a>
+    </header>
+
+    <div class="container">
+        <div class="form-group">
+            <h2>Search Books</h2>
+            <input type="text" id="searchInput" placeholder="Search...">
+            <button onclick="searchBooks()">Search</button>
+        </div>
+
+        <div id="searchResult">
+            <h2>Search Result</h2>
+            <table id="searchTable">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="searchTableBody">
+                    <!-- Search results will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function searchBooks() {
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+            const library = JSON.parse(localStorage.getItem('library')) || {};
+            const searchResult = Object.values(library).filter(book =>
+                book.title.toLowerCase().includes(searchTerm) ||
+                book.author.toLowerCase().includes(searchTerm)
+            );
+            displaySearchResult(searchResult);
+        }
+
+        function displaySearchResult(books) {
+            const tableBody = document.getElementById('searchTableBody');
+            tableBody.innerHTML = '';
+
+            books.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.quantity}</td>
+                    <td><button onclick="borrowBook('${book.title}', '${book.author}')">Borrow</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function borrowBook(title, author) {
+            const bookKey = `${title}_${author}`;
+            const library = JSON.parse(localStorage.getItem('library')) || {};
+            
+            if (library.hasOwnProperty(bookKey) && library[bookKey].quantity > 0) {
+                library[bookKey].quantity--;
+                localStorage.setItem('library', JSON.stringify(library));
+                displaySearchResult(Object.values(library).filter(book =>
+                    book.title.toLowerCase().includes(title.toLowerCase()) &&
+                    book.author.toLowerCase().includes(author.toLowerCase())
+                ));
+                displayBooks();
+            } else {
+                alert(`"${title}" is not available for borrowing.`);
+            }
+        }
+
+        function displayBooks() {
+            const library = JSON.parse(localStorage.getItem('library')) || {};
+            const tableBody = document.getElementById('bookTableBody');
+            tableBody.innerHTML = '';
+
+            Object.values(library).forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.quantity}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        window.onload = function() {
+            // Initialize library data (if needed)
+            // For demonstration purpose, let's add some books initially
+            if (!localStorage.getItem('library')) {
+                const initialLibrary = {
+                    "Book1_Author1": { title: "Book 1", author: "Author 1", quantity: 5 },
+                    "Book2_Author2": { title: "Book 2", author: "Author 2", quantity: 3 },
+                    "Book3_Author3": { title: "Book 3", author: "Author 3", quantity: 8 }
+                };
+                localStorage.setItem('library', JSON.stringify(initialLibrary));
+            }
+            displayBooks();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Inventory - Library Management System</title>
+    <style>
+        body {
+            background: url('bg.png') no-repeat center center fixed; /* Added background image */
+            background-size: cover; /* Ensures the image covers the whole screen */
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.6); /* Dark background */
+            color: #fff; /* Text color */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); /* Soft shadow */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Library Management System</h1>
+        <a href="nav.html" style="color: white; text-decoration: none;">Go to Home</a>
+    </header>
+
+    <div class="container">
+        <div id="bookList">
+            <h2>Library Inventory</h2>
+            <table id="bookTable">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody id="bookTableBody">
+                    <!-- Available books will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function displayBooks() {
+            const library = JSON.parse(localStorage.getItem('library')) || {};
+            const tableBody = document.getElementById('bookTableBody');
+            tableBody.innerHTML = '';
+
+            Object.values(library).forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.quantity}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        window.onload = function() {
+            displayBooks();
+        };
+    </script>
+</body>
+</html>
